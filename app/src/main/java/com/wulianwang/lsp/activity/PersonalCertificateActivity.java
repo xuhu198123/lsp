@@ -30,31 +30,44 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.wulianwang.lsp.R;
+import com.wulianwang.lsp.util.HttpUtil;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.FileNotFoundException;
+import java.util.HashMap;
+import java.util.Map;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 
 public class PersonalCertificateActivity extends AppCompatActivity {
     static final int TAKE_PHOTO=1;
     static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS=1;
-    ImageButton imbt1,imbt2,imbt3,imbtbak;
+    ImageButton imbt,imbt1,imbt2,imbt3,imbtbak;
     int i=0;
-
     Uri[] uris = new Uri[3];
     String[] names = new String[]{"image1.jpg", "image2.jpg", "image3.jpg"};
+    TextView tx1,tx2;
+    EditText ed1,ed2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_personal_certificate);
 
-
+        ed1=(EditText)findViewById(R.id.editText);
+        ed2=(EditText)findViewById(R.id.editText3);
 
         imbt1 =(ImageButton)findViewById(R.id.imageButton);
         imbt2 =(ImageButton)findViewById(R.id.imageButton2);
@@ -92,6 +105,30 @@ public class PersonalCertificateActivity extends AppCompatActivity {
             public void onClick(View v) {
                 i=2;
                 requestPermission();
+            }
+        });
+
+
+        imbt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String url="http://123.7.17.91:7777/login";
+                Map<String,String> map =new HashMap<>();
+                map.put("name", ed1.getText().toString().trim());
+                map.put("num",ed2.getText().toString().trim());
+                map.put("standby1",names[0].trim());
+                map.put("standby2",names[1].trim());
+                map.put("standby3",names[2].trim());
+                HttpUtil.post(url, null, new Callback() {
+                    @Override
+                    public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                    }
+                },null,map);
             }
         });
 
@@ -215,6 +252,8 @@ public class PersonalCertificateActivity extends AppCompatActivity {
                     }
                 }).show();
     }
+
+
 }
 
 
